@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Royal Bakery — Houston, TX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --charcoal:#150d08;
+    --crust-deep:#8a3a12;
+    --crust-mid:#e08d3c;
+    --crust-light:#ffb35c;
+    --pop:#ffd23f;
+    --dough:#f5e6c8;
+    --flour:#fffaf0;
+    --brick:#d9451f;
+    --line: rgba(255,250,240,0.16);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--flour);
+    color:var(--charcoal);
+    font-family:'Source Serif 4', serif;
+    overflow-x:hidden;
+    cursor:default;
+  }
+  h1,h2,h3,.display{
+    font-family:'Big Shoulders Display', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.01em;
+    line-height:0.9;
+  }
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+  @media(max-width:640px){.wrap{padding:0 20px;}}
+
+  /* ---------- PROGRESS BAR ---------- */
+  #progress{
+    position:fixed;top:0;left:0;height:4px;width:0%;
+    background:linear-gradient(90deg, var(--pop), var(--brick));
+    z-index:100;transition:width .08s linear;
+  }
+
+  /* ---------- FLOUR PARTICLES ---------- */
+  .speck{position:fixed;border-radius:50%;background:var(--flour);opacity:0.5;pointer-events:none;z-index:1;}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 32px;
+    color:var(--flour);
+    mix-blend-mode:difference;
+  }
+  .nav-mark{font-family:'Big Shoulders Display';font-weight:800;font-size:1.15rem;letter-spacing:0.04em;}
+  .nav-links{display:flex;gap:26px;font-size:0.85rem;font-family:'Source Serif 4';}
+  .nav-links a{text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px;transition:border-color .2s;}
+  .nav-links a:hover{border-color:currentColor;}
+  @media(max-width:640px){.nav-links{display:none;}}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height:100svh;
+    background:
+      radial-gradient(ellipse at var(--gx,30%) var(--gy,20%), rgba(224,141,60,0.45), transparent 55%),
+      repeating-linear-gradient(0deg, #241a13 0 34px, #2c1f16 34px 36px),
+      var(--charcoal);
+    display:flex;flex-direction:column;justify-content:center;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";position:absolute;inset:0;
+    background-image: repeating-linear-gradient(90deg, transparent 0 118px, rgba(0,0,0,0.35) 118px 121px),
+                       repeating-linear-gradient(90deg, transparent 0 59px, rgba(0,0,0,0.2) 59px 62px);
+    background-position: 0 0, 60px 36px;
+    background-size: 120px 72px, 120px 72px;
+    opacity:0.5;
+    pointer-events:none;
+  }
+  .hero-inner{
+    position:relative;z-index:2;
+    display:grid;grid-template-columns:1.15fr 1fr;gap:40px;align-items:center;
+    padding:130px 32px 60px;
+    max-width:1180px;margin:0 auto;width:100%;
+  }
+  @media(max-width:900px){.hero-inner{grid-template-columns:1fr;padding-top:110px;}}
+
+  .eyelabel{
+    display:inline-block;color:var(--pop);
+    font-family:'Source Serif 4';font-style:italic;font-size:0.95rem;
+    margin-bottom:18px;
+  }
+  .hero h1{
+    color:var(--flour);
+    font-weight:900;
+    font-size:clamp(3.4rem, 9.5vw, 7.6rem);
+  }
+  .hero h1 .word{display:block;overflow:hidden;}
+  .hero h1 .letter{
+    display:inline-block;
+    opacity:0; transform:translateY(60px) rotateX(50deg);
+    animation:riseUp .7s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  .hero h1 .word.gold .letter{
+    background:linear-gradient(100deg, var(--crust-light), var(--pop) 40%, var(--crust-light));
+    background-size:200% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:riseUp .7s cubic-bezier(.2,.8,.2,1) forwards, shimmer 4s linear infinite 1.4s;
+  }
+  @keyframes riseUp{to{opacity:1;transform:translateY(0) rotateX(0);}}
+  @keyframes shimmer{0%{background-position:0% 0;}100%{background-position:200% 0;}}
+  .hero p.tag{
+    color:var(--dough);
+    font-size:1.25rem;max-width:40ch;margin-top:22px;line-height:1.55;
+    opacity:0; animation:fadeUp .8s ease forwards; animation-delay:1.1s;
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+  .hero-ctas{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap;
+    opacity:0; animation:fadeUp .8s ease forwards; animation-delay:1.3s;}
+  .btn{
+    font-family:'Big Shoulders Display';font-weight:700;font-size:1.05rem;letter-spacing:0.03em;
+    padding:15px 28px;border-radius:2px;text-decoration:none;position:relative;overflow:hidden;
+    display:inline-flex;align-items:center;gap:8px;
+    transition:transform .18s ease, box-shadow .25s ease;
+  }
+  .btn-primary{background:var(--crust-mid);color:var(--charcoal);}
+  .btn-primary:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(224,141,60,0.45);}
+  .btn-ghost{border:1px solid rgba(255,250,240,0.45);color:var(--flour);}
+  .btn-ghost:hover{transform:translateY(-3px);background:rgba(255,250,240,0.08);}
+  .btn::after{
+    content:"";position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;
+    background:rgba(255,255,255,0.35);transform:translate(-50%,-50%);
+    transition:width .5s ease, height .5s ease;
+  }
+  .btn:active::after{width:220px;height:220px;transition:width 0s, height 0s;}
+
+  /* ---------- 3D BAGUETTE ---------- */
+  .loaf-stage{
+    position:relative;height:360px;
+    display:flex;align-items:center;justify-content:center;
+    perspective:1400px;
+    touch-action:none;
+  }
+  .loaf-glow{
+    position:absolute;width:280px;height:280px;border-radius:50%;
+    background:radial-gradient(circle, rgba(255,178,84,0.55), transparent 70%);
+    filter:blur(6px);
+    animation:pulseGlow 3.2s ease-in-out infinite;
+  }
+  @keyframes pulseGlow{0%,100%{opacity:0.55;transform:scale(1);}50%{opacity:0.9;transform:scale(1.12);}}
+  .loaf-scene{
+    position:relative;width:60px;height:340px;z-index:2;
+    transform-style:preserve-3d;
+    cursor:grab;
+  }
+  .loaf-scene:active{cursor:grabbing;}
+  .panel{
+    position:absolute;top:0;left:0;
+    width:60px;height:340px;
+    background:linear-gradient(90deg, #5c2c14, #e08d3c 45%, #ffd9a0 52%, #e08d3c 60%, #5c2c14);
+    border-radius:50%/6%;
+    backface-visibility:hidden;
+  }
+  .cap{
+    position:absolute;left:0;
+    width:60px;height:60px;border-radius:50%;
+    background:radial-gradient(circle at 40% 35%, #fff0d4, #f0b874 55%, #a86a3c 100%);
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.35);
+  }
+  .steam{
+    position:absolute;bottom:6%;border-radius:50%;
+    background:radial-gradient(circle, rgba(255,255,255,0.6), transparent 70%);
+    filter:blur(3px);
+    animation: rise 5s linear infinite;
+    pointer-events:none;
+  }
+  @keyframes rise{
+    0%{transform:translateY(0) scale(0.6);opacity:0;}
+    15%{opacity:0.7;}
+    100%{transform:translateY(-240px) scale(1.5);opacity:0;}
+  }
+  .loaf-hint{
+    position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+    color:var(--pop);opacity:0.85;font-size:0.85rem;font-family:'Big Shoulders Display';letter-spacing:0.04em;
+    white-space:nowrap;
+  }
+
+  /* ---------- TICKER (dual direction) ---------- */
+  .ticker{background:var(--brick);color:var(--flour);overflow:hidden;white-space:nowrap;padding:12px 0;}
+  .ticker.alt{background:var(--charcoal);color:var(--pop);}
+  .ticker-track{display:inline-block;font-family:'Big Shoulders Display';font-weight:800;font-size:1.15rem;letter-spacing:0.05em;}
+  .ticker-track span{margin:0 22px;}
+  .ticker-track span::after{content:"✶";margin-left:22px;opacity:0.7;font-size:0.9rem;}
+  .scroll-l{animation:scroll-left 22s linear infinite;}
+  .scroll-r{animation:scroll-right 26s linear infinite;}
+  @keyframes scroll-left{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  @keyframes scroll-right{from{transform:translateX(-50%);}to{transform:translateX(0);}}
+
+  /* ---------- ABOUT ---------- */
+  .about{padding:120px 0;background:var(--flour);perspective:1800px;position:relative;}
+  .about-grid{display:grid;grid-template-columns:0.9fr 1.1fr;gap:64px;align-items:center;}
+  @media(max-width:860px){.about-grid{grid-template-columns:1fr;gap:40px;}}
+  .oven{position:relative;aspect-ratio:1/1;max-width:420px;transform-style:preserve-3d;}
+  .oven-frame{position:absolute;inset:0;border-radius:14px;background:linear-gradient(160deg,#2a2018,#171009);box-shadow:0 30px 70px rgba(217,69,31,0.18);}
+  .oven-glow{position:absolute;inset:14%;border-radius:10px;background:radial-gradient(circle at 50% 60%, #ffcf7d, #d9451f 65%, #2a1c12 100%);animation:ovenFlicker 2.4s ease-in-out infinite;}
+  @keyframes ovenFlicker{0%,100%{filter:brightness(1);}50%{filter:brightness(1.15);}}
+  .oven-door{
+    position:absolute;inset:14%;border-radius:10px;
+    background:linear-gradient(160deg,#3a2c1f,#20160f);
+    border:6px solid #100b07;
+    transform-origin:left center;transform-style:preserve-3d;
+    transition:transform 1.1s cubic-bezier(.6,.05,.2,1);
+    box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  }
+  .oven-handle{position:absolute;right:6%;top:50%;transform:translateY(-50%);width:10px;height:36%;border-radius:6px;background:#0c0805;}
+  .oven.open .oven-door{transform:rotateY(-108deg);}
+  .about-copy .kicker{font-family:'Big Shoulders Display';font-weight:700;color:var(--brick);font-size:1.05rem;letter-spacing:0.03em;margin-bottom:10px;display:block;}
+  .about-copy h2{font-size:clamp(2.2rem,4.4vw,3.2rem);margin-bottom:20px;}
+  .about-copy p{font-size:1.1rem;line-height:1.7;max-width:54ch;color:#2a2018;}
+  .about-copy p + p{margin-top:16px;}
+  .stat-row{display:flex;gap:40px;margin-top:36px;flex-wrap:wrap;}
+  .stat b{font-family:'Big Shoulders Display';font-size:2.6rem;display:block;color:var(--brick);}
+  .stat span{font-size:0.94rem;color:#5a4c3e;}
+
+  /* ---------- MENU ---------- */
+  .menu{padding:110px 0;background:var(--charcoal);color:var(--flour);position:relative;overflow:hidden;}
+  .menu::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 0%, rgba(224,141,60,0.18), transparent 55%);pointer-events:none;}
+  .menu-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:56px;flex-wrap:wrap;position:relative;}
+  .menu-head h2{font-size:clamp(2.3rem,4.6vw,3.5rem);}
+  .menu-head p{max-width:36ch;color:var(--dough);font-size:1.02rem;}
+  .menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(255,250,240,0.14);position:relative;}
+  @media(max-width:760px){.menu-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:480px){.menu-grid{grid-template-columns:1fr;}}
+  .menu-item{
+    background:var(--charcoal);padding:38px 30px;
+    opacity:0; transform:translateY(30px) scale(0.97);
+    transition:opacity .55s ease, transform .55s ease, background .3s ease;
+    will-change:transform;
+  }
+  .menu-item.show{opacity:1;transform:translateY(0) scale(1);}
+  .menu-item:hover{background:#241812;}
+  .menu-item h3{font-size:1.55rem;color:var(--crust-light);margin-bottom:10px;transition:color .25s ease;}
+  .menu-item:hover h3{color:var(--pop);}
+  .menu-item p{font-size:0.98rem;color:var(--dough);line-height:1.55;}
+  .menu-item .num{font-family:'Big Shoulders Display';font-size:0.85rem;color:var(--brick);letter-spacing:0.05em;margin-bottom:14px;display:block;}
+
+  /* ---------- KNOW ---------- */
+  .know{padding:96px 0;background:var(--dough);}
+  .know-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(21,13,8,0.15);}
+  @media(max-width:860px){.know-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:480px){.know-grid{grid-template-columns:1fr;}}
+  .know-item{background:var(--dough);padding:36px 28px;transition:background .25s ease, transform .25s ease;}
+  .know-item:hover{background:#fff2d6;transform:translateY(-4px);}
+  .know-item h3{font-family:'Big Shoulders Display';font-size:1.25rem;margin-bottom:8px;color:var(--brick);}
+  .know-item p{font-size:0.93rem;color:#4a3d2f;line-height:1.5;}
+  .know h2{padding:0 0 50px;font-size:clamp(2.1rem,4.2vw,2.9rem);}
+
+  /* ---------- REVIEWS ---------- */
+  .reviews{padding:110px 0;background:var(--flour);}
+  .reviews h2{font-size:clamp(2.1rem,4.2vw,2.9rem);margin-bottom:10px;}
+  .reviews .sub{color:#5a4c3e;margin-bottom:46px;font-size:1.04rem;}
+  .review-track{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:20px;-webkit-overflow-scrolling:touch;}
+  .review-track::-webkit-scrollbar{height:6px;}
+  .review-track::-webkit-scrollbar-thumb{background:var(--crust-mid);border-radius:4px;}
+  .review-card{
+    scroll-snap-align:start;flex:0 0 320px;
+    background:var(--charcoal);color:var(--flour);
+    padding:32px 28px;border-radius:2px;
+    display:flex;flex-direction:column;justify-content:space-between;min-height:230px;
+    transition:transform .3s ease, box-shadow .3s ease;
+  }
+  .review-card:hover{transform:translateY(-8px);box-shadow:0 18px 34px rgba(217,69,31,0.25);}
+  .review-card .stars{color:var(--pop);font-size:1.05rem;margin-bottom:16px;letter-spacing:2px;}
+  .review-card p{font-size:1.02rem;line-height:1.55;}
+  .review-card .who{margin-top:20px;font-family:'Big Shoulders Display';font-size:0.85rem;color:var(--dough);letter-spacing:0.03em;}
+
+  /* ---------- VISIT ---------- */
+  .visit{padding:110px 0 60px;background:var(--flour);}
+  .visit-grid{display:grid;grid-template-columns:1fr 1fr;gap:50px;}
+  @media(max-width:860px){.visit-grid{grid-template-columns:1fr;}}
+  .visit h2{font-size:clamp(2.1rem,4.2vw,2.9rem);margin-bottom:26px;}
+  .hours-table{width:100%;border-collapse:collapse;font-size:1.02rem;margin-bottom:26px;}
+  .hours-table td{padding:10px 0;border-bottom:1px solid rgba(21,13,8,0.12);}
+  .hours-table td:last-child{text-align:right;font-family:'Big Shoulders Display';}
+  .status{display:inline-flex;align-items:center;gap:8px;font-family:'Big Shoulders Display';font-size:1.05rem;letter-spacing:0.03em;margin-bottom:22px;}
+  .status .dot{width:11px;height:11px;border-radius:50%;animation:dotPulse 1.6s ease-in-out infinite;}
+  .status.open .dot{background:#3f8a4c;}
+  .status.closed .dot{background:var(--brick);}
+  @keyframes dotPulse{0%,100%{box-shadow:0 0 0 0 rgba(217,69,31,0.4);}50%{box-shadow:0 0 0 6px rgba(217,69,31,0);}}
+  .contact-line{margin-bottom:10px;font-size:1.08rem;}
+  .contact-line a{text-decoration:underline;text-decoration-color:var(--crust-mid);transition:color .2s ease;}
+  .contact-line a:hover{color:var(--brick);}
+  .map-frame{width:100%;height:100%;min-height:340px;border:0;border-radius:2px;filter:grayscale(0.2) contrast(1.05);transition:filter .3s ease;}
+  .map-frame:hover{filter:grayscale(0) contrast(1.1);}
+
+  footer{background:var(--charcoal);color:var(--dough);padding:48px 32px;text-align:center;font-size:0.9rem;}
+  footer .fm{font-family:'Big Shoulders Display';color:var(--flour);font-size:1.4rem;margin-bottom:8px;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<nav>
+  <div class="nav-mark">ROYAL BAKERY</div>
+  <div class="nav-links">
+    <a href="#menu">What we bake</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#visit">Visit</a>
+  </div>
+</nav>
+
+<section class="hero" id="top">
+  <div class="hero-inner">
+    <div>
+      <span class="eyelabel">1841 Fairview St · Houston, TX</span>
+      <h1 id="heroTitle">
+        <span class="word" data-text="Royal"></span>
+        <span class="word gold" data-text="Bakery"></span>
+      </h1>
+      <p class="tag">Six mornings a week, a plain brick building on Fairview Street turns out more bread before 8&nbsp;a.m. than most kitchens see all year — po'boy loaves, Cuban bread, baguettes, hoagie rolls, all baked and gone by early afternoon.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="https://www.google.com/maps/dir/?api=1&destination=1841+Fairview+St,+Houston,+TX+77006" target="_blank" rel="noopener">Get directions</a>
+        <a class="btn btn-ghost" href="tel:+17135283971">Call (713) 528-3971</a>
+      </div>
+    </div>
+    <div class="loaf-stage" id="loafStage">
+      <div class="loaf-glow"></div>
+      <div class="loaf-scene" id="loafScene"></div>
+      <div class="loaf-hint">DRAG THE LOAF</div>
+    </div>
+  </div>
+</section>
+
+<div class="ticker"><div class="ticker-track scroll-l" id="tickerTrack1"></div></div>
+<div class="ticker alt"><div class="ticker-track scroll-r" id="tickerTrack2"></div></div>
+
+<section class="about">
+  <div class="wrap about-grid">
+    <div class="oven" id="oven">
+      <div class="oven-frame"></div>
+      <div class="oven-glow"></div>
+      <div class="oven-door"><div class="oven-handle"></div></div>
+    </div>
+    <div class="about-copy">
+      <span class="kicker">Cash only. Takeout only. Worth the trip.</span>
+      <h2>A working bakery, not a storefront for browsing</h2>
+      <p>Royal Bakery doesn't do a display case or a menu board — it does bread, in serious volume, out the back door of a plain brick building on Fairview Street. Most regulars leave with six loaves or more, and some drive across town just to stock up.</p>
+      <p>No delivery, no cards — bring cash, and expect to be in and out fast. The entrance and parking are wheelchair accessible.</p>
+      <div class="stat-row">
+        <div class="stat"><b class="count" data-target="4.9" data-decimals="1">0</b><span>average rating</span></div>
+        <div class="stat"><b class="count" data-target="42">0</b><span>reviews and counting</span></div>
+        <div class="stat"><b>18"</b><span>the house po'boy loaf</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="menu" id="menu">
+  <div class="wrap">
+    <div class="menu-head">
+      <h2>What we bake</h2>
+      <p>Baked fresh each morning, sold by the loaf or the bag — bulk orders welcome.</p>
+    </div>
+    <div class="menu-grid" id="menuGrid">
+      <div class="menu-item"><span class="num">01</span><h3>Po'boy French bread</h3><p>The house loaf, baked at 18 inches. Locals buy it by the bagful for sandwiches and events.</p></div>
+      <div class="menu-item"><span class="num">02</span><h3>Cuban bread</h3><p>A standing favorite — regulars say they always take an extra bag home for family.</p></div>
+      <div class="menu-item"><span class="num">03</span><h3>Baguettes</h3><p>Classic French baguettes, baked in the same early-morning batches as everything else.</p></div>
+      <div class="menu-item"><span class="num">04</span><h3>Hoagie rolls</h3><p>Sturdy rolls built for stacked sandwiches, sold fresh and budget-friendly.</p></div>
+      <div class="menu-item"><span class="num">05</span><h3>Muffaletta rounds</h3><p>Round, dense loaves suited to the classic layered muffaletta.</p></div>
+      <div class="menu-item"><span class="num">06</span><h3>Hamburger buns</h3><p>Simple, soft buns baked daily alongside the rest of the morning's bread.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="know">
+  <div class="wrap">
+    <h2>Know before you go</h2>
+    <div class="know-grid">
+      <div class="know-item"><h3>Cash only</h3><p>No cards, no delivery. Bring cash for your order.</p></div>
+      <div class="know-item"><h3>Buy in bulk</h3><p>Most visitors buy six loaves or more — it's built for volume.</p></div>
+      <div class="know-item"><h3>Quick visit</h3><p>It's a fast, in-and-out stop, not a sit-down bakery.</p></div>
+      <div class="know-item"><h3>Accessible</h3><p>Wheelchair-accessible parking and entrance.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="reviews" id="reviews">
+  <div class="wrap">
+    <h2>What regulars say</h2>
+    <p class="sub">Pulled from 42 reviews averaging 4.9 stars.</p>
+    <div class="review-track">
+      <div class="review-card"><div class="stars">★★★★★</div><p>Regulars call it the best bread they can buy in Houston — the go-to stop for sandwich bread of every kind.</p><div class="who">Local Guide · 15 reviews</div></div>
+      <div class="review-card"><div class="stars">★★★★★</div><p>One customer came back after years away just to fill a big order — they still bake the 18-inch po'boy loaf.</p><div class="who">Local Guide · 31 reviews</div></div>
+      <div class="review-card"><div class="stars">★★★★★</div><p>Hoagie, baguette, muffaletta, and hamburger buns are all baked daily — described as fresh and budget-friendly.</p><div class="who">Local Guide · 21 reviews</div></div>
+      <div class="review-card"><div class="stars">★★★★★</div><p>Fast service and cheap prices for genuinely great bread — the Cuban bread gets singled out for praise.</p><div class="who">Verified visitor</div></div>
+      <div class="review-card"><div class="stars">★★★★★</div><p>One visitor keeps a bag of the Cuban bread on hand for family — a repeat favorite on every trip.</p><div class="who">Verified visitor</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="visit" id="visit">
+  <div class="wrap visit-grid">
+    <div>
+      <h2>Visit</h2>
+      <div class="status" id="statusLine"><span class="dot"></span><span id="statusText">Checking hours…</span></div>
+      <table class="hours-table">
+        <tr><td>Monday – Saturday</td><td>6:00 AM – 1:00 PM</td></tr>
+        <tr><td>Sunday</td><td>Closed</td></tr>
+      </table>
+      <p class="contact-line">1841 Fairview St, Houston, TX 77006</p>
+      <p class="contact-line"><a href="tel:+17135283971">+1 (713) 528-3971</a></p>
+    </div>
+    <iframe class="map-frame" loading="lazy" src="https://www.google.com/maps?q=1841+Fairview+St,+Houston,+TX+77006&output=embed"></iframe>
+  </div>
+</section>
+
+<footer>
+  <div class="fm">ROYAL BAKERY</div>
+  <div>1841 Fairview St, Houston, TX 77006 · (713) 528-3971 · Cash only · Takeout only</div>
+</footer>
+
+<script>
+  // ---------- progress bar ----------
+  window.addEventListener('scroll', ()=>{
+    const h = document.documentElement;
+    const pct = (h.scrollTop)/(h.scrollHeight - h.clientHeight) * 100;
+    document.getElementById('progress').style.width = pct + '%';
+  });
+
+  // ---------- flour specks background ----------
+  const body = document.body;
+  for(let i=0;i<28;i++){
+    const s = document.createElement('div');
+    s.className='speck';
+    const size = 2+Math.random()*4;
+    s.style.width=size+'px'; s.style.height=size+'px';
+    s.style.left = Math.random()*100+'vw';
+    s.style.top = Math.random()*100+'vh';
+    s.style.animation = `floatSpeck ${8+Math.random()*10}s ease-in-out infinite`;
+    s.style.animationDelay = (Math.random()*8)+'s';
+    body.appendChild(s);
+  }
+  const styleSheet = document.createElement('style');
+  styleSheet.textContent = `@keyframes floatSpeck{0%,100%{transform:translateY(0) translateX(0);}50%{transform:translateY(-40px) translateX(20px);}}`;
+  document.head.appendChild(styleSheet);
+
+  // ---------- hero title letters ----------
+  document.querySelectorAll('#heroTitle .word').forEach((word, wi)=>{
+    const text = word.getAttribute('data-text');
+    let delay = wi*6;
+    [...text].forEach((ch,i)=>{
+      const span = document.createElement('span');
+      span.className='letter';
+      span.textContent = ch;
+      span.style.animationDelay = (delay*0.05)+'s';
+      word.appendChild(span);
+      delay++;
+    });
+  });
+
+  // ---------- cursor glow on hero ----------
+  const hero = document.querySelector('.hero');
+  hero.addEventListener('mousemove', e=>{
+    const r = hero.getBoundingClientRect();
+    hero.style.setProperty('--gx', ((e.clientX-r.left)/r.width*100)+'%');
+    hero.style.setProperty('--gy', ((e.clientY-r.top)/r.height*100)+'%');
+  });
+
+  // ---------- 3D baguette build ----------
+  const scene = document.getElementById('loafScene');
+  const PANELS = 14, RADIUS = 26, LEN = 340;
+  for(let i=0;i<PANELS;i++){
+    const p = document.createElement('div');
+    p.className='panel';
+    const angle = (360/PANELS)*i;
+    p.style.transform = `rotateY(${angle}deg) translateZ(${RADIUS}px)`;
+    p.style.filter = `brightness(${0.82 + 0.3*Math.abs(Math.sin((angle*Math.PI)/180))})`;
+    scene.appendChild(p);
+  }
+  const capTop = document.createElement('div');
+  capTop.className='cap';
+  capTop.style.top='0px';
+  const capBottom = capTop.cloneNode();
+  capBottom.style.top = (LEN-60)+'px';
+  scene.appendChild(capTop);
+  scene.appendChild(capBottom);
+
+  const stage = document.getElementById('loafStage');
+  for(let i=0;i<7;i++){
+    const s = document.createElement('div');
+    s.className='steam';
+    const size = 14+Math.random()*20;
+    s.style.width=size+'px'; s.style.height=size+'px';
+    s.style.left = (32+Math.random()*36)+'%';
+    s.style.animationDelay = (Math.random()*5)+'s';
+    stage.appendChild(s);
+  }
+
+  let autoAngle = 0, dragAngle = 0, dragging=false, lastX=0;
+  function tick(){
+    if(!dragging){ autoAngle += 0.35; }
+    scene.style.transform = `rotateY(${autoAngle+dragAngle}deg)`;
+    requestAnimationFrame(tick);
+  }
+  tick();
+  function start(x){ dragging=true; lastX=x; }
+  function move(x){ if(!dragging) return; const dx=x-lastX; dragAngle += dx*0.7; lastX=x; }
+  function end(){ dragging=false; autoAngle += dragAngle; dragAngle=0; }
+  scene.addEventListener('pointerdown', e=>{ scene.setPointerCapture(e.pointerId); start(e.clientX); });
+  scene.addEventListener('pointermove', e=> move(e.clientX));
+  scene.addEventListener('pointerup', end);
+  scene.addEventListener('pointercancel', end);
+
+  // ---------- dual ticker ----------
+  const items1 = ["Po'boy French Bread","Cuban Bread","Baguettes","Hoagie Rolls","Muffaletta Rounds","Hamburger Buns"];
+  const items2 = ["Fresh Every Morning","Cash Only","Bulk Orders Welcome","Baked Before Sunrise","Six Days A Week"];
+  document.getElementById('tickerTrack1').innerHTML = [...items1,...items1].map(t=>`<span>${t}</span>`).join('');
+  document.getElementById('tickerTrack2').innerHTML = [...items2,...items2].map(t=>`<span>${t}</span>`).join('');
+
+  // ---------- oven door reveal ----------
+  const oven = document.getElementById('oven');
+  const ovenObs = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){ oven.classList.add('open'); ovenObs.disconnect(); }
+    });
+  }, {threshold:0.5});
+  ovenObs.observe(oven);
+
+  // ---------- count-up stats ----------
+  document.querySelectorAll('.count').forEach(el=>{
+    const target = parseFloat(el.getAttribute('data-target'));
+    const decimals = parseInt(el.getAttribute('data-decimals')||'0');
+    const obs = new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          let start=null; const duration=1400;
+          function step(ts){
+            if(!start) start=ts;
+            const progress = Math.min((ts-start)/duration,1);
+            const eased = 1-Math.pow(1-progress,3);
+            el.textContent = (target*eased).toFixed(decimals);
+            if(progress<1) requestAnimationFrame(step);
+          }
+          requestAnimationFrame(step);
+          obs.disconnect();
+        }
+      });
+    },{threshold:0.6});
+    obs.observe(el);
+  });
+
+  // ---------- menu stagger + tilt ----------
+  const menuItems = document.querySelectorAll('.menu-item');
+  const menuObs = new IntersectionObserver((entries)=>{
+    entries.forEach((entry,i)=>{
+      if(entry.isIntersecting){
+        setTimeout(()=>entry.target.classList.add('show'), i*90);
+        menuObs.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.2});
+  menuItems.forEach(el=>menuObs.observe(el));
+  menuItems.forEach(el=>{
+    el.addEventListener('mousemove', e=>{
+      const r = el.getBoundingClientRect();
+      const px = (e.clientX-r.left)/r.width - 0.5;
+      const py = (e.clientY-r.top)/r.height - 0.5;
+      el.style.transform = `perspective(700px) rotateX(${-py*8}deg) rotateY(${px*8}deg) translateY(0) scale(1.02)`;
+    });
+    el.addEventListener('mouseleave', ()=>{ el.style.transform=''; });
+  });
+
+  // ---------- open/closed status ----------
+  function updateStatus(){
+    const now = new Date();
+    const day = now.getDay();
+    const mins = now.getHours()*60 + now.getMinutes();
+    const open = 6*60, close = 13*60;
+    const isOpenDay = day >= 1 && day <= 6;
+    const isOpen = isOpenDay && mins >= open && mins < close;
+    const el = document.getElementById('statusLine');
+    const txt = document.getElementById('statusText');
+    el.className = 'status ' + (isOpen ? 'open':'closed');
+    if(isOpen){ txt.textContent = 'Open now · closes at 1:00 PM'; }
+    else if(isOpenDay && mins < open){ txt.textContent = 'Closed now · opens at 6:00 AM'; }
+    else { txt.textContent = 'Closed now · opens Monday at 6:00 AM'; }
+  }
+  updateStatus();
+
+  // ---------- brick parallax ----------
+  window.addEventListener('scroll', ()=>{
+    const y = window.scrollY;
+    hero.style.backgroundPosition = `0 ${y*0.15}px`;
+  });
+</script>
+</body>
+</html>
